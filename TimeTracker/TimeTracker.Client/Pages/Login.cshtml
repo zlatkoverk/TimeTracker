@@ -1,0 +1,53 @@
+﻿@using TimeTracker.Shared
+@using TimeTracker.Client.Services
+@page "/login"
+@inject UserState userState
+@inject Microsoft.AspNetCore.Blazor.Services.IUriHelper uriHelper
+
+<h3>Login</h3>
+
+<input bind="@Username"/>
+<input bind="@Password" type="password"/>
+@Message
+
+<button onclick="@CheckLogin">Login</button>
+
+@functions {
+    private string Username;
+    private string Password;
+    private string Message;
+    private Func<UserCredentials, Task> LoginFunc;
+
+    public void CheckLogin()
+    {
+        if(string.IsNullOrWhiteSpace(Username))
+        {
+            Message = "You didn't enter username";
+            return;
+        }
+        if (string.IsNullOrEmpty(Password))
+        {
+            Message = "You didn't enter password";
+            return;
+        }
+
+        LoginFunc(new UserCredentials()
+        {
+            Username = Username,
+            PasswordHash = Password.GetHashCode()
+        });
+
+        if(userState.LoggedIn)
+        {
+            uriHelper.NavigateTo("/");
+        } else
+        {
+            Message = "User with that username and password does not exist";
+        }
+    }
+
+    protected override void OnInit()
+    {
+        LoginFunc = userState.Login;
+    }
+}

@@ -1,0 +1,58 @@
+﻿@using TimeTracker.Client.Services
+@using TimeTracker.Shared
+@page "/register"
+@inject RegisterService checker
+@inject Microsoft.AspNetCore.Blazor.Services.IUriHelper uriHelper
+
+<h1>Register</h1>
+
+<input onchange="@ChangeUsername"/>
+<input type="password" bind="@Password"/>
+<button onclick="@CheckAndRegister" disabled="@{!checker.IsAvailable}">Register</button>
+        <br />
+@Error
+<span>@Username</span><br />
+<span>@checker.Message</span><br />
+@functions
+{
+    public string Username { get; set; }
+    public string Password { get; set; }
+    private string Error;
+    public Func<string, Task> CheckAvailability { get; set; }
+    public Func<UserCredentials, Task> RegisterUser { get; set; }
+
+    public void ChangeUsername(UIChangeEventArgs e)
+    {
+        Username = ((string) e.Value).Trim();
+        CheckAvailability(Username);
+    }
+
+    public void CheckAndRegister()
+    {
+        CheckAvailability(Username);
+        if (!checker.IsAvailable)
+        {
+            Error = "Please select another username";
+            return;
+        }
+        if (string.IsNullOrEmpty(Password))
+        {
+            Error = "Please enter your password";
+            return;
+        }
+
+        RegisterUser(new UserCredentials() {
+            Username = Username,
+            PasswordHash = Password.GetHashCode()
+        });
+
+        uriHelper.NavigateTo("login");
+    }
+
+    protected override void OnInit()
+    {
+        CheckAvailability = checker.CheckAvailability;
+        RegisterUser = checker.Register;
+        checker.OnChange += StateHasChanged;
+    }
+}
