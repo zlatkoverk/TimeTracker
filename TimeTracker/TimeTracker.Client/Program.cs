@@ -12,12 +12,11 @@ namespace TimeTracker.Client
         {
             var serviceProvider = new BrowserServiceProvider(services =>
             {
-                services.AddSingleton<UserState>();
                 services.AddSingleton<AppState>();
                 services.AddSingleton<RegisterService>();
             });
 
-            new BrowserRenderer(serviceProvider).AddComponent<App>("app");
+            new BrowserRenderer(serviceProvider).AddComponent<Main>("app");
         }
     }
 }

@@ -1,6 +1,4 @@
 ﻿@using TimeTracker.Client.Services
-@inject UserState userState
-
 
 
    <nav class="navbar navbar-expand-lg navbar-light bg-faded">
@@ -21,7 +19,7 @@
                 </li>
             </ul>
             <ul class="navbar-nav">
-                @if (!userState.LoggedIn)
+                @if (!state.LoggedIn)
                 {
                 <li class="nav-item">
                     <a class="nav-link" href="/login">Login</a>
@@ -33,7 +31,7 @@
                 else
                 {
                     <li class="nav-item">
-                    <a class="nav-link">Welcome @userState.User.Name!</a>
+                    <a class="nav-link">Welcome @state.User.Name!</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" onclick="@Logout">Logout</a>
@@ -43,15 +41,16 @@
         </div>
     </nav>
 
-    @functions {
-
+@functions {
+    public AppState state { get; set; }
     private void Logout()
     {
-        userState.Logout();
+        state.Logout();
     }
 
     protected override void OnInit()
     {
-        userState.OnChange += StateHasChanged;
+        base.OnInit();
+        state.OnChange += StateHasChanged;
     }
-    }
+}

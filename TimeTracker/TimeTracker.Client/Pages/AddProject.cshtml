@@ -1,29 +1,23 @@
 ﻿@using TimeTracker.Shared.Model
-@using TimeTracker.Client.Services
-@inject Microsoft.AspNetCore.Blazor.Services.IUriHelper uriHelper
-@inject AppState appState
-@page "/"
-<NavMenu state=appState/>
-@if (!appState.LoggedIn)
-{
+
 <div class="container">
                 <form class="form-horizontal" role="form">
                     <div class="row">
                         <div class="col-md-3"></div>
                         <div class="col-md-6">
-                            <h2>Login</h2>
+                            <h2>Add new project</h2>
                             <hr>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md-3 field-label-responsive">
-                            <label for="username">Username</label>
+                            <label for="username">Project name</label>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <div class="input-group mb-2 mr-sm-2 mb-sm-0">
                                     <div class="input-group-addon" style="width: 2.6rem"><i class="fa fa-at"></i></div>
-                                    <input type="text" class="form-control" placeholder="user123" required autofocus bind="@Username" />
+                                    <input type="text" class="form-control" placeholder="Project name" required autofocus bind="@Name" />
                                 </div>
                             </div>
                         </div>
@@ -36,14 +30,14 @@
                     </div>
                     <div class="row">
                         <div class="col-md-3 field-label-responsive">
-                            <label for="password">Password</label>
+                            <label for="password">Description</label>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group has-danger">
                                 <div class="input-group mb-2 mr-sm-2 mb-sm-0">
                                     <div class="input-group-addon" style="width: 2.6rem"><i class="fa fa-key"></i></div>
-                                    <input type="password" class="form-control"
-                                           placeholder="Password" required bind="@Password"/>
+                                    <input type="text" class="form-control" 
+                                           placeholder="Description" required bind="@Description"/>
                                 </div>
                             </div>
                         </div>
@@ -56,61 +50,27 @@
                     </div>
                     
                     <div class="row">
-                        <div class="col-md-3"></div>
-                        <div class="col-md-6">
-                            <span class="text-danger align-middle">@Message</span>
-                        </div>
                         <div class="row">
                             <div class="col-md-3"></div>
                             <div class="col-md-6">
-                                <button type="submit" class="btn btn-success" onclick="@CheckLogin"><i class="fa fa-user-plus"></i> Login</button>
+                                <button type="submit" class="btn btn-success" onclick="@CreateProject"><i class="fa fa-user-plus"></i>Create</button>
                             </div>
                         </div>
                     </div>
                 </form>
             </div>
-}
-else
+@functions
 {
-    <AddProject OnCreate=appState.CreateProject UserId=appState.User.Id/>
-    <ProjectList Projects=appState.ActiveProjects/>
-}
-@functions {
-    private string Username;
-    private string Password;
-    private string Message;
-    private Func<LoginModel, Task> LoginFunc;
+    public string Name { get; set; }
+    public string Description { get; set; }
 
-    public void CheckLogin()
-    {
-        if(string.IsNullOrWhiteSpace(Username))
-        {
-            Message = "You didn't enter username";
-            return;
-        }
-        if (string.IsNullOrEmpty(Password))
-        {
-            Message = "You didn't enter password";
-            return;
-        }
-        if (!appState.LoggedIn)
-        {
-            LoginFunc(new LoginModel(Username, Password));
-        }
-        if(appState.LoggedIn)
-        {
-            Message = "";
-        }
-        else
-        {
-            Message = "User with that username and password does not exist";
-        }
-    }
+    public Func<CreateProjectModel, Task> OnCreate { get; set; }
+    public Guid UserId { get; set; }
 
-    protected override void OnInit()
+    private void CreateProject()
     {
-        LoginFunc = appState.Login;
-        appState.OnChange += StateHasChanged;
+        OnCreate(new CreateProjectModel(Name, Description, UserId));
+        Name = "";
+        Description = "";
     }
-    
 }

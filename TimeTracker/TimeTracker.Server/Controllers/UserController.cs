@@ -10,11 +10,11 @@ namespace TimeTracker.Server.Controllers
     [Route("api/[controller]")]
     public class UserController : Controller
     {
-        private readonly IUserRepository _userRepository;
+        private readonly ITrackerRepository _repository;
 
-        public UserController(IUserRepository userRepository)
+        public UserController(ITrackerRepository userRepository)
         {
-            _userRepository = userRepository;
+            _repository = userRepository;
         }
 
         [HttpPost("[action]")]
@@ -22,7 +22,7 @@ namespace TimeTracker.Server.Controllers
         {
             var user = new User(model.Name, model.Surname, model.Username, model.Password);
 
-            _userRepository.RegisterUser(user);
+            _repository.RegisterUser(user);
 
             return;
         }
@@ -34,7 +34,7 @@ namespace TimeTracker.Server.Controllers
             {
                 throw new ArgumentException();
             }
-            bool taken = _userRepository.UserExists(username);
+            bool taken = _repository.UserExists(username);
 
             if (taken)
             {
@@ -47,11 +47,7 @@ namespace TimeTracker.Server.Controllers
         [HttpPost("[action]")]
         public ActionResult<Response> Exists([FromBody] LoginModel credentials)
         {
-            var user = _userRepository.GetUser(new UserCredentials()
-            {
-                Username = credentials.Username,
-                PasswordHash = credentials.Password.GetHashCode()
-            });
+            var user = _repository.GetUser(new UserCredentials(credentials.Username, credentials.Password));
             if (user != null)
             {
                 return new Response("User exists", false);
@@ -62,12 +58,7 @@ namespace TimeTracker.Server.Controllers
         [HttpPost("[action]")]
         public ActionResult<User> Login([FromBody] LoginModel credentials)
         {
-            var user = _userRepository.GetUser(new UserCredentials()
-            {
-                Username = credentials.Username,
-                PasswordHash = credentials.Password.GetHashCode()
-            });
-            return user;
+            return _repository.GetUser(new UserCredentials(credentials.Username, credentials.Password));
         }
     }
 }

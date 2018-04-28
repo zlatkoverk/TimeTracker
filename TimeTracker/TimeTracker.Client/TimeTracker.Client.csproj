@@ -15,4 +15,38 @@
     <ProjectReference Include="..\TimeTracker.Shared\TimeTracker.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <BlazorGenerate Remove="Pages\ProjectList.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Pages\AddProject.cshtml" />
+    <None Include="Pages\_ViewImports.cshtml" />
+    <None Include="Shared\MainLayout.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <BlazorGenerate Remove="Pages\AddProject.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <BlazorGenerate Remove="Main.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <BlazorGenerate Remove="Pages\_ViewImports.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="Pages\_ViewImports.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <BlazorGenerate Remove="Shared\MainLayout.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="Shared\MainLayout.cshtml" />
+  </ItemGroup>
+
 </Project>

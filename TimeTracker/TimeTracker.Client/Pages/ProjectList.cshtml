@@ -1,0 +1,21 @@
+﻿@using TimeTracker.Shared
+
+@if (Projects != null)
+{
+    <table>
+        <tr>
+            <th>Name</th>
+        </tr>
+        @foreach(var project in Projects)
+        {
+            <tr>
+                <td>@project.Name</td>
+            </tr>
+        }
+    </table>
+}
+
+@functions
+{
+    public IList<Project> Projects { get; set; }
+}

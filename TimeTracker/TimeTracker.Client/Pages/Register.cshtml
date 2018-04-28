@@ -3,7 +3,10 @@
 @page "/register"
 @inject RegisterService checker
 @inject Microsoft.AspNetCore.Blazor.Services.IUriHelper uriHelper
-
+@inject AppState appState
+<NavMenu state=appState/>
+@if (!appState.LoggedIn)
+{
             <div class="container">
                 <form class="form-horizontal" role="form" method="POST" action="/register">
                     <div class="row">
@@ -21,7 +24,7 @@
                             <div class="form-group">
                                 <div class="input-group mb-2 mr-sm-2 mb-sm-0">
                                     <div class="input-group-addon" style="width: 2.6rem"><i class="fa fa-user"></i></div>
-                                    <input type="text" name="name" class="form-control" id="name"
+                                    <input type="text" class="form-control" 
                                            placeholder="John" required autofocus bind="@name" />
                                 </div>
                             </div>
@@ -42,7 +45,7 @@
                             <div class="form-group">
                                 <div class="input-group mb-2 mr-sm-2 mb-sm-0">
                                     <div class="input-group-addon" style="width: 2.6rem"><i class="fa fa-user"></i></div>
-                                    <input type="text" name="name" class="form-control" id="name"
+                                    <input type="text" class="form-control"
                                            placeholder="Doe" required autofocus bind="@surname"/>
                                 </div>
                             </div>
@@ -63,7 +66,7 @@
                             <div class="form-group">
                                 <div class="input-group mb-2 mr-sm-2 mb-sm-0">
                                     <div class="input-group-addon" style="width: 2.6rem"><i class="fa fa-at"></i></div>
-                                    <input type="text" name="username" class="form-control" id="username" placeholder="user123" required autofocus onchange="@ChangeUsername" />
+                                    <input type="text" class="form-control" placeholder="user123" required autofocus onchange="@ChangeUsername" />
                                 </div>
                             </div>
                         </div>
@@ -92,7 +95,7 @@
                             <div class="form-group has-danger">
                                 <div class="input-group mb-2 mr-sm-2 mb-sm-0">
                                     <div class="input-group-addon" style="width: 2.6rem"><i class="fa fa-key"></i></div>
-                                    <input type="password" name="password" class="form-control" id="password"
+                                    <input type="password" class="form-control"
                                            placeholder="Password" required bind="@Password"/>
                                 </div>
                             </div>
@@ -114,8 +117,8 @@
                                     <div class="input-group-addon" style="width: 2.6rem">
                                         <i class="fa fa-repeat"></i>
                                     </div>
-                                    <input type="password" name="password-confirmation" class="form-control"
-                                           id="password-confirm" placeholder="Password" required bind="@PasswordCheck"/>
+                                    <input type="password" class="form-control"
+                                           placeholder="Password" required bind="@PasswordCheck"/>
                                 </div>
                             </div>
                         </div>
@@ -134,49 +137,55 @@
                     </div>
                 </form>
             </div>
-            @functions
+}
+else
+{
+    <h1>Already registered</h1>
+}
+    @functions
             {
-                public string Password { get; set; }
-                public string PasswordCheck { get; set; }
+        public string Password { get; set; }
+        public string PasswordCheck { get; set; }
 
-                private string name;
-                private string surname;
+        private string name;
+        private string surname;
 
-                public Func<Task> CheckAvailability { get; set; }
-                public Func<RegisterModel, Task> RegisterUser { get; set; }
+        public Func<Task> CheckAvailability { get; set; }
+        public Func<RegisterModel, Task> RegisterUser { get; set; }
 
-                public void ChangeUsername(UIChangeEventArgs e)
-                {
-                    checker.Username = ((string)e.Value).Trim();
-                    CheckAvailability();
-                }
+        public void ChangeUsername(UIChangeEventArgs e)
+        {
+            checker.Username = ((string)e.Value).Trim();
+            CheckAvailability();
+        }
 
-                public void CheckAndRegister()
-                {
-                    CheckAvailability();
-                    if (!checker.IsAvailable)
-                    {
-                        checker.GeneralMessage = "Please select another username";
-                        return;
-                    }
-                    if (string.IsNullOrEmpty(Password) || Password != PasswordCheck)
-                    {
-                        checker.GeneralMessage = "Passwords did not match or they were empty";
-                        Password = "";
-                        PasswordCheck = "";
-                        return;
-                    }
-                    checker.GeneralMessage = "";
+        public void CheckAndRegister()
+        {
+            CheckAvailability();
+            if (!checker.IsAvailable)
+            {
+                checker.GeneralMessage = "Please select another username";
+                return;
+            }
+            if (string.IsNullOrEmpty(Password) || Password != PasswordCheck)
+            {
+                checker.GeneralMessage = "Passwords did not match or they were empty";
+                Password = "";
+                PasswordCheck = "";
+                return;
+            }
+            checker.GeneralMessage = "";
 
-                    RegisterUser(new RegisterModel(checker.Username, Password, name, surname));
+            RegisterUser(new RegisterModel(checker.Username, Password, name, surname));
 
-                    uriHelper.NavigateTo("login");
-                }
+            uriHelper.NavigateTo("/");
+        }
 
-                protected override void OnInit()
-                {
-                    CheckAvailability = checker.CheckAvailability;
-                    RegisterUser = checker.Register;
-                    checker.OnChange += StateHasChanged;
-                }
+        protected override void OnInit()
+        {
+            CheckAvailability = checker.CheckAvailability;
+            RegisterUser = checker.Register;
+            checker.OnChange += StateHasChanged;
+            appState.OnChange += StateHasChanged;
+        }
             }

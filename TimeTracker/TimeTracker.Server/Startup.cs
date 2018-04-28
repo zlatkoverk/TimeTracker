@@ -42,10 +42,10 @@ namespace TimeTracker.Server
                 });
             });
 
-            services.AddDbContext<UserDbContext>(options =>
+            services.AddDbContext<TrackerDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddTransient<IUserRepository, UserSqlRepository>();
+            services.AddTransient<ITrackerRepository, TrackerSqlRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
