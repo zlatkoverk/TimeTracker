@@ -9,7 +9,8 @@ namespace TimeTracker.Shared
         public Guid Id { get; set; }
         public string Name { get; set; }
         public string Surname { get; set; }
-        public UserCredentials Credentials { get; set; }
+        public string Username { get; set; }
+        public string PasswordHash { get; set; }
         public IList<Project> Projects { get; set; }
 
         public User() { }
@@ -19,7 +20,8 @@ namespace TimeTracker.Shared
             Id = Guid.NewGuid();
             Name = name;
             Surname = surname;
-            Credentials = new UserCredentials(username, password);
+            Username = username;
+            PasswordHash = HashUtil.GetHash(password);
             Projects = new List<Project>();
         }
 

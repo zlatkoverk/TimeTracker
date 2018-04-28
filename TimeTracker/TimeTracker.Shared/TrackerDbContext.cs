@@ -13,7 +13,6 @@ namespace TimeTracker.Shared
         }
 
         public DbSet<User> Users { get; set; }
-        public DbSet<UserCredentials> Credentials { get; set; }
         public DbSet<Project> Projects { get; set; }
         public DbSet<TimeInterval> TimeIntervals { get; set; }
 
@@ -24,11 +23,9 @@ namespace TimeTracker.Shared
             modelBuilder.Entity<User>().HasKey(user => user.Id);
             modelBuilder.Entity<User>().Property(user => user.Name).IsRequired(false);
             modelBuilder.Entity<User>().Property(user => user.Surname).IsRequired(false);
-            modelBuilder.Entity<User>().HasOne(user => user.Credentials);
+            modelBuilder.Entity<User>().Property(user => user.Username).IsRequired();
+            modelBuilder.Entity<User>().Property(user => user.PasswordHash).IsRequired();
             modelBuilder.Entity<User>().HasMany(user => user.Projects);
-
-            modelBuilder.Entity<UserCredentials>().HasKey(credentials => credentials.Username);
-            modelBuilder.Entity<UserCredentials>().Property(credentials => credentials.PasswordHash).IsRequired();
 
             modelBuilder.Entity<Project>().HasKey(project => project.Id);
             modelBuilder.Entity<Project>().Property(project => project.Name).IsRequired();

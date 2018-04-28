@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using TimeTracker.Shared;
 using TimeTracker.Shared.ApiMessages;
@@ -47,7 +48,7 @@ namespace TimeTracker.Server.Controllers
         [HttpPost("[action]")]
         public ActionResult<Response> Exists([FromBody] LoginModel credentials)
         {
-            var user = _repository.GetUser(new UserCredentials(credentials.Username, credentials.Password));
+            var user = _repository.GetUser(credentials);
             if (user != null)
             {
                 return new Response("User exists", false);
@@ -56,9 +57,15 @@ namespace TimeTracker.Server.Controllers
         }
 
         [HttpPost("[action]")]
-        public ActionResult<User> Login([FromBody] LoginModel credentials)
+        public User Login([FromBody] LoginModel credentials)
         {
-            return _repository.GetUser(new UserCredentials(credentials.Username, credentials.Password));
+            return _repository.GetUser(credentials);
+        }
+
+        [HttpGet("[action]")]
+        public IList<User> GetAll()
+        {
+            return _repository.GetUsers();
         }
     }
 }

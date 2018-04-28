@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using TimeTracker.Shared.Model;
 
 namespace TimeTracker.Shared
 {
@@ -22,13 +23,17 @@ namespace TimeTracker.Shared
 
         public bool UserExists(string userName)
         {
-            return _context.Credentials.Find(userName) != null;
+            return _context.Users.FirstOrDefault(user => user.Username == userName) != null;
         }
 
-        public User GetUser(UserCredentials credentials)
+        public User GetUser(LoginModel credentials)
         {
-            return _context.Users.Include(u => u.Credentials)
-                .FirstOrDefault(user => user.Credentials.Username == credentials.Username && user.Credentials.PasswordHash == credentials.PasswordHash);
+            return _context.Users.FirstOrDefault(user => user.Username == credentials.Username && user.PasswordHash == HashUtil.GetHash(credentials.Password));
+        }
+
+        public IList<User> GetUsers()
+        {
+            return _context.Users.ToList();
         }
 
         public User GetUser(Guid id)

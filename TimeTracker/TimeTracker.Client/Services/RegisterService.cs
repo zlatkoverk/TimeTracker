@@ -51,7 +51,7 @@ namespace TimeTracker.Client.Services
 
             GeneralMessage = "";
             UsernameMessage = "";
-            await http.PostJsonAsync<UserCredentials>("api/user/register", model);
+            await http.PostJsonAsync("api/user/register", model);
         }
 
         private void NotifyStateChanged() => OnChange?.Invoke();
