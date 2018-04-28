@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using TimeTracker.Shared;
 using TimeTracker.Shared.ApiMessages;
+using TimeTracker.Shared.Model;
 
 namespace TimeTracker.Server.Controllers
 {
@@ -20,9 +18,9 @@ namespace TimeTracker.Server.Controllers
         }
 
         [HttpPost("[action]")]
-        public void Register([FromBody] UserCredentials credentials)
+        public void Register([FromBody] RegisterModel model)
         {
-            var user = new User() { Credentials = credentials, Id = new Guid() };
+            var user = new User(model.Name, model.Surname, model.Username, model.Password);
 
             _userRepository.RegisterUser(user);
 
@@ -47,9 +45,13 @@ namespace TimeTracker.Server.Controllers
         }
 
         [HttpPost("[action]")]
-        public ActionResult<Response> Exists([FromBody] UserCredentials credentials)
+        public ActionResult<Response> Exists([FromBody] LoginModel credentials)
         {
-            var user = _userRepository.GetUser(credentials);
+            var user = _userRepository.GetUser(new UserCredentials()
+            {
+                Username = credentials.Username,
+                PasswordHash = credentials.Password.GetHashCode()
+            });
             if (user != null)
             {
                 return new Response("User exists", false);
@@ -58,9 +60,13 @@ namespace TimeTracker.Server.Controllers
         }
 
         [HttpPost("[action]")]
-        public ActionResult<User> Login([FromBody] UserCredentials credentials)
+        public ActionResult<User> Login([FromBody] LoginModel credentials)
         {
-            var user = _userRepository.GetUser(credentials);
+            var user = _userRepository.GetUser(new UserCredentials()
+            {
+                Username = credentials.Username,
+                PasswordHash = credentials.Password.GetHashCode()
+            });
             return user;
         }
     }

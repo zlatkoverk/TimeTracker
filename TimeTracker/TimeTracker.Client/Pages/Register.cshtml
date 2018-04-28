@@ -1,58 +1,182 @@
 ﻿@using TimeTracker.Client.Services
-@using TimeTracker.Shared
+@using TimeTracker.Shared.Model
 @page "/register"
 @inject RegisterService checker
 @inject Microsoft.AspNetCore.Blazor.Services.IUriHelper uriHelper
 
-<h1>Register</h1>
+            <div class="container">
+                <form class="form-horizontal" role="form" method="POST" action="/register">
+                    <div class="row">
+                        <div class="col-md-3"></div>
+                        <div class="col-md-6">
+                            <h2>Register New User</h2>
+                            <hr>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 field-label-responsive">
+                            <label for="name">Name</label>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+                                    <div class="input-group-addon" style="width: 2.6rem"><i class="fa fa-user"></i></div>
+                                    <input type="text" name="name" class="form-control" id="name"
+                                           placeholder="John" required autofocus bind="@name" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-control-feedback">
+                                <span class="text-danger align-middle">
+                                    <!-- Put name validation error messages here -->
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 field-label-responsive">
+                            <label for="surname">Surname</label>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+                                    <div class="input-group-addon" style="width: 2.6rem"><i class="fa fa-user"></i></div>
+                                    <input type="text" name="name" class="form-control" id="name"
+                                           placeholder="Doe" required autofocus bind="@surname"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-control-feedback">
+                                <span class="text-danger align-middle">
+                                    <!-- Put name validation error messages here -->
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 field-label-responsive">
+                            <label for="username">Username</label>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+                                    <div class="input-group-addon" style="width: 2.6rem"><i class="fa fa-at"></i></div>
+                                    <input type="text" name="username" class="form-control" id="username" placeholder="user123" required autofocus onchange="@ChangeUsername" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-control-feedback">
+                                @if (checker.IsAvailable)
+                                {
+                                    <span class="text-success align-middle">
+                                        <i class="fa fa-close"> @checker.UsernameMessage</i>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="text-danger align-middle">
+                                        <i class="fa fa-close"> @checker.UsernameMessage</i>
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 field-label-responsive">
+                            <label for="password">Password</label>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group has-danger">
+                                <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+                                    <div class="input-group-addon" style="width: 2.6rem"><i class="fa fa-key"></i></div>
+                                    <input type="password" name="password" class="form-control" id="password"
+                                           placeholder="Password" required bind="@Password"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-control-feedback">
+                                <span class="text-danger align-middle">
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 field-label-responsive">
+                            <label for="password">Confirm Password</label>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+                                    <div class="input-group-addon" style="width: 2.6rem">
+                                        <i class="fa fa-repeat"></i>
+                                    </div>
+                                    <input type="password" name="password-confirmation" class="form-control"
+                                           id="password-confirm" placeholder="Password" required bind="@PasswordCheck"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3"></div>
+                        <div class="col-md-6">
+                            <span class="text-danger align-middle">@checker.GeneralMessage</span>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3"></div>
+                            <div class="col-md-6">
+                                <button type="submit" class="btn btn-success" onclick="@CheckAndRegister"><i class="fa fa-user-plus"></i> Register</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            @functions
+            {
+                public string Password { get; set; }
+                public string PasswordCheck { get; set; }
 
-<input onchange="@ChangeUsername"/>
-<input type="password" bind="@Password"/>
-<button onclick="@CheckAndRegister" disabled="@{!checker.IsAvailable}">Register</button>
-        <br />
-@Error
-<span>@Username</span><br />
-<span>@checker.Message</span><br />
-@functions
-{
-    public string Username { get; set; }
-    public string Password { get; set; }
-    private string Error;
-    public Func<string, Task> CheckAvailability { get; set; }
-    public Func<UserCredentials, Task> RegisterUser { get; set; }
+                private string name;
+                private string surname;
 
-    public void ChangeUsername(UIChangeEventArgs e)
-    {
-        Username = ((string) e.Value).Trim();
-        CheckAvailability(Username);
-    }
+                public Func<Task> CheckAvailability { get; set; }
+                public Func<RegisterModel, Task> RegisterUser { get; set; }
 
-    public void CheckAndRegister()
-    {
-        CheckAvailability(Username);
-        if (!checker.IsAvailable)
-        {
-            Error = "Please select another username";
-            return;
-        }
-        if (string.IsNullOrEmpty(Password))
-        {
-            Error = "Please enter your password";
-            return;
-        }
+                public void ChangeUsername(UIChangeEventArgs e)
+                {
+                    checker.Username = ((string)e.Value).Trim();
+                    CheckAvailability();
+                }
 
-        RegisterUser(new UserCredentials() {
-            Username = Username,
-            PasswordHash = Password.GetHashCode()
-        });
+                public void CheckAndRegister()
+                {
+                    CheckAvailability();
+                    if (!checker.IsAvailable)
+                    {
+                        checker.GeneralMessage = "Please select another username";
+                        return;
+                    }
+                    if (string.IsNullOrEmpty(Password) || Password != PasswordCheck)
+                    {
+                        checker.GeneralMessage = "Passwords did not match or they were empty";
+                        Password = "";
+                        PasswordCheck = "";
+                        return;
+                    }
+                    checker.GeneralMessage = "";
 
-        uriHelper.NavigateTo("login");
-    }
+                    RegisterUser(new RegisterModel(checker.Username, Password, name, surname));
 
-    protected override void OnInit()
-    {
-        CheckAvailability = checker.CheckAvailability;
-        RegisterUser = checker.Register;
-        checker.OnChange += StateHasChanged;
-    }
-}
+                    uriHelper.NavigateTo("login");
+                }
+
+                protected override void OnInit()
+                {
+                    CheckAvailability = checker.CheckAvailability;
+                    RegisterUser = checker.Register;
+                    checker.OnChange += StateHasChanged;
+                }
+            }

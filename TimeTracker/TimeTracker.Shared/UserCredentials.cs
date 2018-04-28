@@ -9,9 +9,17 @@ namespace TimeTracker.Shared
         public string Username { get; set; }
         public int PasswordHash { get; set; }
 
+        public UserCredentials() { }
+
+        public UserCredentials(string username, string password)
+        {
+            Username = username;
+            PasswordHash = password.GetHashCode();
+        }
+
         public override bool Equals(object obj)
         {
-            if (!(obj is UserCredentials))
+            if (obj is null || obj.GetType() != GetType())
             {
                 return false;
             }
@@ -31,7 +39,7 @@ namespace TimeTracker.Shared
             {
                 return true;
             }
-            if (ReferenceEquals(c1, null) || ReferenceEquals(c2, null))
+            if (c1 is null || c2 is null)
             {
                 return false;
             }

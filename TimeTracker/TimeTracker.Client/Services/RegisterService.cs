@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using TimeTracker.Shared;
 using TimeTracker.Shared.ApiMessages;
+using TimeTracker.Shared.Model;
 
 namespace TimeTracker.Client.Services
 {
@@ -11,41 +12,46 @@ namespace TimeTracker.Client.Services
     {
         private readonly HttpClient http;
         public event Action OnChange;
+        public string Username { get; set; }
         public bool IsAvailable { get; private set; }
-        public string Message { get; private set; }
+        public string UsernameMessage { get; private set; }
+        public string GeneralMessage { get; set; }
 
         public RegisterService(HttpClient http)
         {
             this.http = http;
-            Message = "Enter the username";
         }
 
-        public async Task CheckAvailability(string username)
+        public async Task CheckAvailability()
         {
-            var response = await http.GetJsonAsync<Response>("api/user/free/" + username);
+            var response = await http.GetJsonAsync<Response>("api/user/free/" + Username);
             IsAvailable = !response.Error;
 
             if (IsAvailable)
             {
-                Message = "Username is available";
+                UsernameMessage = "Username is available";
             }
             else
             {
-                Message = "Username is not available";
+                UsernameMessage = "Username is not available";
             }
 
             NotifyStateChanged();
         }
 
-        public async Task Register(UserCredentials credentials)
+        public async Task Register(RegisterModel model)
         {
-            await CheckAvailability(credentials.Username);
+            Username = model.Username;
+            await CheckAvailability();
             if (!IsAvailable)
             {
+                GeneralMessage = "Please choose another username";
                 return;
             }
 
-            await http.PostJsonAsync<UserCredentials>("api/user/register", credentials);
+            GeneralMessage = "";
+            UsernameMessage = "";
+            await http.PostJsonAsync<UserCredentials>("api/user/register", model);
         }
 
         private void NotifyStateChanged() => OnChange?.Invoke();

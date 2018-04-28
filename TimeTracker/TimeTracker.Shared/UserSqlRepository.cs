@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace TimeTracker.Shared
 {
@@ -19,12 +20,13 @@ namespace TimeTracker.Shared
 
         public bool UserExists(string userName)
         {
-            return _context.Users.FirstOrDefault(user => user.Credentials.Username == userName) != null;
+            return _context.Users.Include(u => u.Credentials).FirstOrDefault(user => user.Credentials.Username == userName) != null;
         }
 
         public User GetUser(UserCredentials credentials)
         {
-            return _context.Users.FirstOrDefault(user => user.Credentials == credentials);
+            return _context.Users.Include(u => u.Credentials)
+                .FirstOrDefault(user => user.Credentials.Username == credentials.Username && user.Credentials.PasswordHash == credentials.PasswordHash);
         }
     }
 }

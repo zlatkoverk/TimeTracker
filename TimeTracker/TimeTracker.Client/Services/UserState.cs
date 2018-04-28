@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Blazor;
 using TimeTracker.Shared;
 using TimeTracker.Shared.ApiMessages;
+using TimeTracker.Shared.Model;
 
 namespace TimeTracker.Client.Services
 {
@@ -19,15 +20,21 @@ namespace TimeTracker.Client.Services
             this.http = http;
         }
 
-        public async Task Login(UserCredentials credentials)
+        public async Task Login(LoginModel model)
         {
-            var response = await http.PostJsonAsync<Response>("api/user/exists", credentials);
+            var response = await http.PostJsonAsync<Response>("api/user/exists", model);
             if (response.Error)
             {
                 return;
             }
 
-            User = await http.PostJsonAsync<User>("api/user/login", credentials);
+            User = await http.PostJsonAsync<User>("api/user/login", model);
+            NotifyStateChanged();
+        }
+
+        public void Logout()
+        {
+            User = null;
             NotifyStateChanged();
         }
 

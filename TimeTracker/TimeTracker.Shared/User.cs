@@ -10,5 +10,15 @@ namespace TimeTracker.Shared
         public string Name { get; set; }
         public string Surname { get; set; }
         public UserCredentials Credentials { get; set; }
+
+        public User() { }
+
+        public User(string name, string surname, string username, string password)
+        {
+            Id = Guid.NewGuid();
+            Name = name;
+            Surname = surname;
+            Credentials = new UserCredentials(username, password);
+        }
     }
 }

@@ -1,22 +1,84 @@
-﻿@using TimeTracker.Shared
+﻿@using TimeTracker.Shared.Model
 @using TimeTracker.Client.Services
 @page "/login"
 @inject UserState userState
 @inject Microsoft.AspNetCore.Blazor.Services.IUriHelper uriHelper
 
-<h3>Login</h3>
-
-<input bind="@Username"/>
-<input bind="@Password" type="password"/>
-@Message
-
-<button onclick="@CheckLogin">Login</button>
-
+@if (!userState.LoggedIn)
+{
+<div class="container">
+                <form class="form-horizontal" role="form">
+                    <div class="row">
+                        <div class="col-md-3"></div>
+                        <div class="col-md-6">
+                            <h2>Login</h2>
+                            <hr>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 field-label-responsive">
+                            <label for="username">Username</label>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+                                    <div class="input-group-addon" style="width: 2.6rem"><i class="fa fa-at"></i></div>
+                                    <input type="text" name="username" class="form-control" id="username" placeholder="user123" required autofocus bind="@Username" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-control-feedback">
+                                <span class="text-danger align-middle">
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 field-label-responsive">
+                            <label for="password">Password</label>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group has-danger">
+                                <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+                                    <div class="input-group-addon" style="width: 2.6rem"><i class="fa fa-key"></i></div>
+                                    <input type="password" name="password" class="form-control" id="password"
+                                           placeholder="Password" required bind="@Password"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-control-feedback">
+                                <span class="text-danger align-middle">
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-3"></div>
+                        <div class="col-md-6">
+                            <span class="text-danger align-middle">@Message</span>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3"></div>
+                            <div class="col-md-6">
+                                <button type="submit" class="btn btn-success" onclick="@CheckLogin"><i class="fa fa-user-plus"></i> Login</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+}
+else
+{
+    uriHelper.NavigateTo("/");
+}
 @functions {
     private string Username;
     private string Password;
     private string Message;
-    private Func<UserCredentials, Task> LoginFunc;
+    private Func<LoginModel, Task> LoginFunc;
 
     public void CheckLogin()
     {
@@ -31,11 +93,7 @@
             return;
         }
 
-        LoginFunc(new UserCredentials()
-        {
-            Username = Username,
-            PasswordHash = Password.GetHashCode()
-        });
+        LoginFunc(new LoginModel(Username, Password));
 
         if(userState.LoggedIn)
         {
@@ -49,5 +107,6 @@
     protected override void OnInit()
     {
         LoginFunc = userState.Login;
+        userState.OnChange += StateHasChanged;
     }
 }
