@@ -1,21 +1,69 @@
 ﻿@using TimeTracker.Shared
+@using TimeTracker.Shared.Model
 
+<div>
+    <button class="btn" onclick="@(()=>ChangeListState())">Show other projects</button>
+</div>
 @if (Projects != null)
 {
-    <table>
-        <tr>
-            <th>Name</th>
-        </tr>
-        @foreach(var project in Projects)
-        {
+    <table class="table table-hover">
+        <thead>
             <tr>
-                <td>@project.Name</td>
+                <th scope="col">Name</th>
+                <th scope="col">Description</th>
             </tr>
-        }
+        </thead>
+        <tbody>
+            @foreach (var project in Projects)
+            {
+                <tr onclick="@(()=>SetActiveProject(project))">
+                    <td>@project.Name</td>
+                    <td>@project.Description</td>
+                    @if (ShowActive)
+                    {
+                        <td><button class="btn btn-danger" onclick=@(() => ChangeState(project))><span class="glyphicon glyphicon-lock"></span>Archive</button></td>
+                    }
+                    else
+                    {
+                        <td><button class="btn btn-success" onclick=@(()=>ChangeState(project))><span class="glyphicon glyphicon-lock"></span>Activate</button></td>
+                    }
+                </tr>
+            }
+            <tr>
+                <td><input class="form-control" type="text" placeholder="Name" bind="@Name" required/></td>
+                <td><input class="form-control" type="text" placeholder="Description" bind="@Description"/></td>
+                <td><button class="btn btn-success" onclick="@CreateProject"><span class="glyphicon glyphicon-floppy-disk"></span>Create</button></td>
+            </tr>
+        </tbody>
     </table>
 }
 
 @functions
 {
     public IList<Project> Projects { get; set; }
+    public string Name { get; set; }
+    public string Description { get; set; }
+    public bool ShowActive { get; set; }
+
+    public Func<CreateProjectModel, Task> OnCreate { get; set; }
+    public Func<Project, Task> OnArchiveProject { get; set; }
+    public Guid UserId { get; set; }
+    public Func<Task> ChangeListState { get; set; }
+    public Func<Project, Task> SetActiveProject { get; set; }
+
+    private void ChangeState(Project project)
+    {
+        OnArchiveProject(project);
+    }
+
+    private void CreateProject()
+    {
+        if (string.IsNullOrWhiteSpace(Name))
+        {
+            return;
+        }
+        OnCreate(new CreateProjectModel(Name, Description, UserId));
+        Name = "";
+        Description = "";
+    }
 }

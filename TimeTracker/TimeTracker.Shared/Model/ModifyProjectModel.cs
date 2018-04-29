@@ -2,24 +2,22 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace TimeTracker.Shared
+namespace TimeTracker.Shared.Model
 {
-    public class Project
+    public class ModifyProjectModel
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
-
         public string Description { get; set; }
-        public IList<Activity> Activities { get; set; }
         public bool Active { get; set; }
-        public Project() { }
-        public Project(string name, string description)
+
+        public ModifyProjectModel() { }
+        public ModifyProjectModel(Guid id, string name, string description, bool active)
         {
-            Id = Guid.NewGuid();
+            Id = id;
             Name = name;
             Description = description;
-            Active = true;
-            Activities = new List<Activity>();
+            Active = active;
         }
     }
 }

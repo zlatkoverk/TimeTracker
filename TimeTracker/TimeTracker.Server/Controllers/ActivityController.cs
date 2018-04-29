@@ -9,30 +9,25 @@ namespace TimeTracker.Server.Controllers
 {
 
     [Route("api/[controller]")]
-    public class ProjectController : Controller
+    public class ActivityController : Controller
     {
         private readonly ITrackerRepository _repository;
 
-        public ProjectController(ITrackerRepository userRepository)
+        public ActivityController(ITrackerRepository userRepository)
         {
             _repository = userRepository;
         }
 
         [HttpPost("[action]")]
-        public void Add([FromBody] CreateProjectModel model)
+        public void Add([FromBody] CreateActivityModel model)
         {
-            var user = _repository.GetUser(model.User);
-            var project = new Project(model.Name, model.Description);
-
-            _repository.AddProject(project, user);
-
-            return;
+            _repository.AddActivity(model.ProjectId, new Activity(model.Description, model.StartTime, model.EndTime.Value));
         }
 
-        [HttpGet("[action]/{user}")]
-        public IList<Project> GetProjects(Guid user)
+        [HttpGet("[action]/{project}")]
+        public IList<Activity> GetAll(Guid project)
         {
-            return _repository.GetProjects(user);
+            return _repository.GetActivities(project);
         }
 
         [HttpPost("[action]")]

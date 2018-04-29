@@ -1,0 +1,68 @@
+﻿@using TimeTracker.Shared.Model
+@using System.Timers
+
+@if (!Activities.ContainsKey(Project))
+{
+    <button class="btn btn-success" onclick="@StartActivity">Start Activity</button>
+}
+else
+{
+    <div>Start time: @Activities[Project].StartTime</div>
+    @if (Activities[Project].EndTime == null)
+    {
+        <h4>Time elapsed: <span class="badge badge-secondary">@timeElapsed.Minutes.ToString("D2"):@((timeElapsed.Seconds % 60).ToString("D2"))</span></h4>
+        <input class="form-control" placeholder="Description" type="text" bind="@Activities[Project].Description" />
+        <button class="btn btn-danger" onclick="@StopActivity">Stop Activity</button>
+    }
+    else
+    {
+        <div>End time: @Activities[Project].EndTime</div>
+    }
+}
+
+@functions
+{
+private Dictionary<Guid, CreateActivityModel> Activities = new Dictionary<Guid, CreateActivityModel>();
+public Func<CreateActivityModel, Task> SaveActivity { get; set; }
+public Guid Project { get; set; }
+private string Description;
+private Timer timer;
+private int runningActivities = 0;
+private TimeSpan timeElapsed;
+
+private void StartActivity()
+{
+    Activities[Project] = new CreateActivityModel(Guid.Parse(Project.ToString()), DateTime.Now);
+    if (runningActivities == 0)
+    {
+        timer.Start();
+    }
+    ++runningActivities;
+    timeElapsed = new TimeSpan(0);
+}
+
+private void ChangeTime(Object o, ElapsedEventArgs e)
+{
+    timeElapsed = DateTime.Now.Subtract(Activities[Project].StartTime);
+    StateHasChanged();
+}
+
+private void StopActivity()
+{
+    Activities[Project].EndTime = DateTime.Now;
+    SaveActivity(Activities[Project]);
+    Activities.Remove(Project);
+    if (--runningActivities == 0)
+    {
+        timer.Stop();
+    }
+}
+
+protected override void OnInit()
+{
+    base.OnInit();
+    timer = new Timer();
+    timer.Elapsed += ChangeTime;
+    timer.Interval = 1000;
+}
+}

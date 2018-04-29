@@ -1,11 +1,7 @@
 ﻿@using TimeTracker.Shared.Model
 @using TimeTracker.Client.Services
 @inject Microsoft.AspNetCore.Blazor.Services.IUriHelper uriHelper
-@inject AppState appState
-@page "/"
-<NavMenu state=appState/>
-@if (!appState.LoggedIn)
-{
+
 <div class="container">
                 <form class="form-horizontal" role="form">
                     <div class="row">
@@ -69,13 +65,9 @@
                     </div>
                 </form>
             </div>
-}
-else
-{
-    <AddProject OnCreate=appState.CreateProject UserId=appState.User.Id/>
-    <ProjectList Projects=appState.ActiveProjects/>
-}
+
 @functions {
+    public AppState appState { get; set; }
     private string Username;
     private string Password;
     private string Message;
@@ -112,5 +104,4 @@ else
         LoginFunc = appState.Login;
         appState.OnChange += StateHasChanged;
     }
-    
 }

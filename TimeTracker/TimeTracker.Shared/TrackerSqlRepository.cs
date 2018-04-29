@@ -54,5 +54,31 @@ namespace TimeTracker.Shared
             return _context.Users.Include(u => u.Projects).FirstOrDefault(user => user.Id == userId).Projects;
         }
 
+        public Project GetProject(Guid id)
+        {
+            return _context.Projects.Include(p => p.Activities).FirstOrDefault(p => p.Id == id);
+        }
+
+        public void ModifyProject(Project project)
+        {
+            var p = _context.Projects.Find(project.Id);
+            p.Name = project.Name;
+            p.Description = project.Description;
+            p.Active = project.Active;
+            _context.SaveChanges();
+        }
+
+        public void AddActivity(Guid projectId, Activity activity)
+        {
+            var p = _context.Projects.Include(project => project.Activities).FirstOrDefault(project => project.Id == projectId);
+            p.Activities.Add(activity);
+            _context.SaveChanges();
+        }
+
+        public IList<Activity> GetActivities(Guid projectId)
+        {
+            var p = _context.Projects.Include(project => project.Activities).FirstOrDefault(project => project.Id == projectId);
+            return p.Activities.OrderByDescending(a=>a.StartTime).ToList();
+        }
     }
 }

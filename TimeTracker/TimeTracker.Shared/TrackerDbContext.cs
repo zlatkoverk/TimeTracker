@@ -14,7 +14,7 @@ namespace TimeTracker.Shared
 
         public DbSet<User> Users { get; set; }
         public DbSet<Project> Projects { get; set; }
-        public DbSet<TimeInterval> TimeIntervals { get; set; }
+        public DbSet<Activity> Activities { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -30,9 +30,12 @@ namespace TimeTracker.Shared
             modelBuilder.Entity<Project>().HasKey(project => project.Id);
             modelBuilder.Entity<Project>().Property(project => project.Name).IsRequired();
             modelBuilder.Entity<Project>().Property(project => project.Description).IsRequired(false);
-            modelBuilder.Entity<Project>().HasMany<TimeInterval>(project => project.WorkIntervals).WithOne(interval => interval.Project);
+            modelBuilder.Entity<Project>().HasMany<Activity>(project => project.Activities);
 
-            modelBuilder.Entity<TimeInterval>().HasKey(interval => interval.Id);
+            modelBuilder.Entity<Activity>().HasKey(activity => activity.Id);
+            modelBuilder.Entity<Activity>().Property(activity => activity.Description).IsRequired(false);
+            modelBuilder.Entity<Activity>().Property(activity => activity.StartTime).IsRequired();
+            modelBuilder.Entity<Activity>().Property(activity => activity.EndTime).IsRequired();
         }
     }
 }

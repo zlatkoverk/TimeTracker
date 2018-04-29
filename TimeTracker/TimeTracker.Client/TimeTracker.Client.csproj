@@ -20,7 +20,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="Pages\ActivityList.cshtml" />
+    <None Include="Pages\AddActivity.cshtml" />
     <None Include="Pages\AddProject.cshtml" />
+    <None Include="Pages\ProjectDetails.cshtml" />
     <None Include="Pages\_ViewImports.cshtml" />
     <None Include="Shared\MainLayout.cshtml" />
   </ItemGroup>
@@ -47,6 +50,30 @@
 
   <ItemGroup>
     <Content Remove="Shared\MainLayout.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <BlazorGenerate Remove="Pages\ProjectDetails.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="Pages\ProjectDetails.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <BlazorGenerate Remove="Pages\AddActivity.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="Pages\AddActivity.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <BlazorGenerate Remove="Pages\ActivityList.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="Pages\ActivityList.cshtml" />
   </ItemGroup>
 
 </Project>

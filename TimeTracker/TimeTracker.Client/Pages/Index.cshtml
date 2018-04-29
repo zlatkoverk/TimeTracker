@@ -1,18 +1,25 @@
-﻿@page "/app"
+﻿@page "/"
 @using TimeTracker.Client.Services
 @inject AppState appState
 
-@if (appState.LoggedIn)
+<NavMenu state=appState/>
+@if (!appState.LoggedIn)
 {
-    <NavMenu state=appState/>
-    <ProjectList State=appState Projects=appState.ActiveProjects/>
-    <AddProject OnCreate=appState.CreateProject UserId=appState.User.Id/>
+    <Login appState=appState />
 }
 else
 {
-    <NavMenu state=appState/>
-    <h2>Please log in</h2>
-    <a href="/login">Login</a>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <ProjectDetails Project=appState.ActiveProject SaveActivity=appState.SaveActivity/>
+            </div>
+            <div class="col">
+                <ProjectList Projects=appState.Projects OnCreate=appState.CreateProject UserId=appState.User.Id SetActiveProject=appState.SetActiveProject
+                             OnArchiveProject=appState.ChangeProjectState ShowActive=appState.ActiveProjectsShown ChangeListState=appState.ShowOtherProjects />
+            </div>
+        </div>
+    </div>
 }
 
 @functions 

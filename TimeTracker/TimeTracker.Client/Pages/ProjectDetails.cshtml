@@ -1,0 +1,27 @@
+﻿@using TimeTracker.Shared
+@using TimeTracker.Shared.Model
+
+
+@if (Project == null)
+{
+    <h1>Please select a project</h1>
+}
+else
+{
+    <div class="jumbotron jumbotron-fluid">
+        <div class="container">
+            <h1 class="display-4">@Project.Name</h1>
+            <p class="lead">@Project.Description</p>
+            <hr class="my-4"/>
+            <AddActivity Project=Project.Id SaveActivity=SaveActivity/>
+            <hr class="my-4"/>
+            <ActivityList Activities=Project.Activities/>
+        </div>
+    </div>
+}
+
+@functions
+{
+    public Project Project { get; set; }
+    public Func<CreateActivityModel, Task> SaveActivity { get; set; }
+}
