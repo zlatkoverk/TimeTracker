@@ -44,5 +44,38 @@ namespace TimeTracker.Server.Controllers
             project.Active = model.Active;
             _repository.ModifyProject(project);
         }
+
+        [HttpGet("[action]/{projectId}")]
+        public object[] ChartData(Guid projectId)
+        {
+            var project = _repository.GetProject(projectId);
+
+            List<object> data = new List<object>();
+            var header = new List<string>();
+            header.Add("Duration");
+            header.Add("Number of activities");
+            data.Add(header);
+            Dictionary<int, int> durations = new Dictionary<int, int>();
+
+            foreach (var activity in project.Activities)
+            {
+                var duration = (int)activity.EndTime.Value.Subtract(activity.StartTime).TotalMinutes;
+                if (!durations.ContainsKey(duration))
+                {
+                    durations[duration] = 1;
+                }
+                else
+                {
+                    durations[duration]++;
+                }
+            }
+
+            foreach (var duration in durations.Keys)
+            {
+                data.Add(new object[] { duration + " min", durations[duration] });
+            }
+
+            return data.ToArray();
+        }
     }
 }

@@ -1,0 +1,20 @@
+﻿@using Microsoft.AspNetCore.Blazor.Browser.Interop
+@using TimeTracker.Shared
+@inject HttpClient http
+
+<h3>Chart</h3>
+<button class="btn btn-success" onclick="@(()=>load())">Show</button>
+
+<div id="piechart"></div>
+
+
+@functions{
+    public Project Project { get; set; }
+
+
+    public async Task load()
+    {   
+        RegisteredFunction.Invoke<bool>("drawChart", await http.GetStringAsync("api/project/chartData/"+Project.Id), "Chart: " + Project.Name);
+    }
+
+}

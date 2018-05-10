@@ -17,6 +17,8 @@ else
             <div class="col">
                 <ProjectList Projects=appState.Projects OnCreate=appState.CreateProject UserId=appState.User.Id SetActiveProject=appState.SetActiveProject
                              OnArchiveProject=appState.ChangeProjectState ShowActive=appState.ActiveProjectsShown ChangeListState=appState.ShowOtherProjects />
+                <hr />
+                <ChartComponent Project="appState.ActiveProject"/>
             </div>
         </div>
     </div>

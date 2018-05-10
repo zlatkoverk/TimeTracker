@@ -76,4 +76,8 @@
     <Content Remove="Pages\ActivityList.cshtml" />
   </ItemGroup>
 
+  <ItemGroup>
+    <BlazorGenerate Remove="Pages\ChartComponent.cshtml" />
+  </ItemGroup>
+
 </Project>
