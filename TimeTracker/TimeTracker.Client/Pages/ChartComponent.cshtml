@@ -3,18 +3,22 @@
 @inject HttpClient http
 
 <h3>Chart</h3>
-<button class="btn btn-success" onclick="@(()=>load())">Show</button>
-
+@if (Project != null)
+{
+    <button class="btn btn-success" onclick="@(() => load())">Refresh</button>
+}
+else
+{
+    <div>Please select a project</div>
+}
 <div id="piechart"></div>
 
 
 @functions{
     public Project Project { get; set; }
-
-
+    
     public async Task load()
     {   
         RegisteredFunction.Invoke<bool>("drawChart", await http.GetStringAsync("api/project/chartData/"+Project.Id), "Chart: " + Project.Name);
     }
-
 }
