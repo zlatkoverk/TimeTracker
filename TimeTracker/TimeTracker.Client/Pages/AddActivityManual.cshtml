@@ -1,7 +1,7 @@
 ﻿@using TimeTracker.Shared.Model
-
-<input class="form-control" placeholder="Description" type="text" bind="@Activity.Description" />
-<input class="form-control" placeholder="Label" type="text" bind="@Activity.Label" />
+<br />
+<input class="form-control" placeholder="Description" type="text" bind="@Activity.Description" /><br />
+<input class="form-control" placeholder="Label" type="text" bind="@Activity.Label" /><br />
 <div class="container">
     <div class="row">
         <div class="col-md-2">
@@ -11,7 +11,7 @@
             <label for="minutes">Minutes:</label><input class="form-control" placeholder="Description" type="number" bind="Minutes" />
         </div>
     </div>
-</div>
+</div><br />
 <button class="btn btn-danger" onclick=@save>Save</button>
 
 @functions
