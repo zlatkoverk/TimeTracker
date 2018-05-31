@@ -2,66 +2,63 @@
 @using TimeTracker.Shared.Model
 
 @if (Activities != null)
-{
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th scope="col">Description</th>
-                <th scope="col">Duration</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var label in ActivitiesByLabel.Keys)
-            {
+{@foreach (var label in ActivitiesByLabel.Keys)
+    {
+        <h3>@label</h3>
+        <table class="table table-bordered">
+            <thead>
                 <tr>
-                    <th>@label</th>
+                    <th scope="col">Description</th>
+                    <th scope="col">Duration</th>
                 </tr>
+            </thead>
+            <tbody>
                 @foreach (var activity in ActivitiesByLabel[label])
                 {
-                    <tr onclick="@(()=>selectActivity(activity))">
+                    <tr onclick="@(() => selectActivity(activity))">
                         <td>@activity.Description</td>
-                        <td>@activity.Duration.Minutes.ToString("D2"):@((activity.Duration.Seconds % 60).ToString("D2"))</td>
+                        <td>@activity.Duration.Hours.ToString("D2"):@activity.Duration.Minutes.ToString("D2"):@((activity.Duration.Seconds % 60).ToString("D2"))</td>
                     </tr>
                 }
-            }
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    }
 }
 
 @functions
 {
-    [Parameter]
-    private Dictionary<Guid, ActivityModel> ActivitiesMap { get; set; }
-    [Parameter]
-    private Guid Project { get; set; }
-    [Parameter]
-    private IList<Activity> Activities { get; set; }
-    [Parameter]
-    private Action notifyParent { get; set; }
-    private IDictionary<string, IList<Activity>> ActivitiesByLabel { get; set; }
+[Parameter]
+private Dictionary<Guid, ActivityModel> ActivitiesMap { get; set; }
+[Parameter]
+private Guid Project { get; set; }
+[Parameter]
+private IList<Activity> Activities { get; set; }
+[Parameter]
+private Action notifyParent { get; set; }
+private IDictionary<string, IList<Activity>> ActivitiesByLabel { get; set; }
 
-    protected override void OnParametersSet()
+protected override void OnParametersSet()
+{
+    IDictionary<string, IList<Activity>> dict = new Dictionary<string, IList<Activity>>();
+    foreach (var a in Activities)
     {
-        IDictionary<string, IList<Activity>> dict = new Dictionary<string, IList<Activity>>();
-        foreach (var a in Activities)
+        if (!dict.ContainsKey(a.Label))
         {
-            if (!dict.ContainsKey(a.Label))
-            {
-                dict[a.Label] = new List<Activity>();
-            }
-            dict[a.Label].Add(a);
+            dict[a.Label] = new List<Activity>();
         }
-
-        ActivitiesByLabel = dict;
+        dict[a.Label].Add(a);
     }
 
-    private void selectActivity(Activity activity)
+    ActivitiesByLabel = dict;
+}
+
+private void selectActivity(Activity activity)
+{
+    ActivitiesMap[Project] = new ActivityModel(Project, activity.Duration, activity.Description)
     {
-        ActivitiesMap[Project] = new ActivityModel(Project, activity.Duration, activity.Description)
-        {
-            ActivityId = activity.Id,
-            Label = activity.Label
-        };
-        notifyParent();
-    }
+        ActivityId = activity.Id,
+        Label = activity.Label
+    };
+    notifyParent();
+}
 }

@@ -12,19 +12,31 @@ else
         <div class="container">
             <h1 class="display-4">@Project.Name</h1>
             <p class="lead">@Project.Description</p>
-            <hr class="my-4"/>
-            <AddActivity Project=Project.Id SaveActivity=SaveActivity Activities=ActivitiesMap/>
-            <hr class="my-4"/>
-            <ActivityList Activities=Project.Activities ActivitiesMap=ActivitiesMap Project=Project.Id notifyParent=StateHasChanged/>
+            <hr class="my-4" />
+            @if (ShowManualAddition)
+            {
+                <button class="btn btn-info" onclick=@(()=>ShowManualAddition=!ShowManualAddition)>Hide</button>
+                <AddActivityManual SaveActivity=SaveActivity Project=Project.Id />
+                <hr class="my-4" />
+            }
+            @if (!ShowManualAddition)
+            {
+                <button class="btn btn-info" onclick=@(() => ShowManualAddition = !ShowManualAddition)>Add Activity Manually</button>
+                <hr class="my-4"/>
+            }
+            <AddActivity Project=Project.Id SaveActivity=SaveActivity Activities=ActivitiesMap />
+            <hr class="my-4" />
+            <ActivityList Activities=Project.Activities ActivitiesMap=ActivitiesMap Project=Project.Id notifyParent=StateHasChanged />
         </div>
     </div>
 }
 
 @functions
 {
-    private Dictionary<Guid, ActivityModel> ActivitiesMap = new Dictionary<Guid, ActivityModel>();
-    [Parameter]
-    private Project Project { get; set; }
-    [Parameter]
-    private Func<ActivityModel, Task> SaveActivity { get; set; }
+private Dictionary<Guid, ActivityModel> ActivitiesMap = new Dictionary<Guid, ActivityModel>();
+[Parameter]
+private Project Project { get; set; }
+[Parameter]
+private Func<ActivityModel, Task> SaveActivity { get; set; }
+private bool ShowManualAddition { get; set; }
 }

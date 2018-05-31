@@ -1,0 +1,39 @@
+﻿@using TimeTracker.Shared.Model
+
+<input class="form-control" placeholder="Description" type="text" bind="@Activity.Description" />
+<input class="form-control" placeholder="Label" type="text" bind="@Activity.Label" />
+<div class="container">
+    <div class="row">
+        <div class="col-md-2">
+            <label for="hours">Hours:</label><input class="form-control" placeholder="Description" type="number" bind="Hours" />
+        </div>
+        <div class="col-md-2">
+            <label for="minutes">Minutes:</label><input class="form-control" placeholder="Description" type="number" bind="Minutes" />
+        </div>
+    </div>
+</div>
+<button class="btn btn-danger" onclick=@save>Save</button>
+
+@functions
+{
+[Parameter]
+private Func<ActivityModel, Task> SaveActivity { get; set; }
+[Parameter]
+private Guid Project { get; set; }
+private ActivityModel Activity { get; set; }
+private int Hours { get; set; }
+private int Minutes { get; set; }
+
+void save()
+{
+    Activity.Duration = new TimeSpan(Hours, Minutes, 0);
+    SaveActivity(Activity);
+    Activity = new ActivityModel(Project);
+    Hours = Minutes = 0;
+}
+
+protected override void OnParametersSet()
+{
+    Activity = new ActivityModel(Project);
+}
+}

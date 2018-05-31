@@ -83,4 +83,8 @@
     <BlazorGenerate Remove="Pages\ChartComponent.cshtml" />
   </ItemGroup>
 
+  <ItemGroup>
+    <BlazorGenerate Remove="Pages\AddActivityManual.cshtml" />
+  </ItemGroup>
+
 </Project>

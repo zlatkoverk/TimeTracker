@@ -16,7 +16,7 @@ namespace TimeTracker.Shared
         {
             if(label==null)
             {
-                label = "witoutLabel";
+                label = "Other";
             }
             Id = Guid.NewGuid();
             Description = description;

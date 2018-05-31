@@ -5,21 +5,26 @@
 <h3>Chart</h3>
 @if (Project != null)
 {
-    <button class="btn btn-success" onclick="@(() => load())">Refresh</button>
+    <button class="btn btn-success" onclick="@(() => loadActivityDurations())">Activity Durations</button>
+    <button class="btn btn-success" onclick="@(() => loadLabelDurations())">Label Durations</button>
 }
 else
 {
     <div>Please select a project</div>
 }
-<div id="piechart"></div>
-
+<div id="chart"></div>
 
 @functions{
     [Parameter]
     private Project Project { get; set; }
 
-    public async Task load()
+    public async Task loadActivityDurations()
     {
-        RegisteredFunction.Invoke<bool>("drawChart", await http.GetStringAsync("api/project/chartData/"+Project.Id), "Chart: " + Project.Name);
+        RegisteredFunction.Invoke<bool>("drawPieChart", await http.GetStringAsync("api/chart/byminutes/" + Project.Id), "Chart: " + Project.Name);
+    }
+
+    public async Task loadLabelDurations()
+    {
+        RegisteredFunction.Invoke<bool>("drawPieChart", await http.GetStringAsync("api/chart/bylabels/" + Project.Id), "Chart: " + Project.Name);
     }
 }
