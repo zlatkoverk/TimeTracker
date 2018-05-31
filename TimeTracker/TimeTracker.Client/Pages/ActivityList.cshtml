@@ -1,25 +1,28 @@
 ﻿@using TimeTracker.Shared
+@using TimeTracker.Shared.Model
 
 @if (Activities != null)
 {
     <table class="table table-bordered">
         <thead>
             <tr>
-                <th scope="col">#</th>
-                <th scope="col">Start Time</th>
-                <th scope="col">End Time</th>
                 <th scope="col">Description</th>
+                <th scope="col">Duration</th>
             </tr>
         </thead>
         <tbody>
-            @for(int i = 0; i < Activities.Count; i++)
+            @foreach (var label in ActivitiesByLabel.Keys)
             {
                 <tr>
-                    <th  scope="row">@i</th>
-                    <td>@Activities[i].StartTime</td>
-                    <td>@Activities[i].EndTime</td>
-                    <td>@Activities[i].Description</td>
+                    <th>@label</th>
                 </tr>
+                @foreach (var activity in ActivitiesByLabel[label])
+                {
+                    <tr onclick="@(()=>selectActivity(activity))">
+                        <td>@activity.Description</td>
+                        <td>@activity.Duration.Minutes.ToString("D2"):@((activity.Duration.Seconds % 60).ToString("D2"))</td>
+                    </tr>
+                }
             }
         </tbody>
     </table>
@@ -28,5 +31,37 @@
 @functions
 {
     [Parameter]
+    private Dictionary<Guid, ActivityModel> ActivitiesMap { get; set; }
+    [Parameter]
+    private Guid Project { get; set; }
+    [Parameter]
     private IList<Activity> Activities { get; set; }
+    [Parameter]
+    private Action notifyParent { get; set; }
+    private IDictionary<string, IList<Activity>> ActivitiesByLabel { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        IDictionary<string, IList<Activity>> dict = new Dictionary<string, IList<Activity>>();
+        foreach (var a in Activities)
+        {
+            if (!dict.ContainsKey(a.Label))
+            {
+                dict[a.Label] = new List<Activity>();
+            }
+            dict[a.Label].Add(a);
+        }
+
+        ActivitiesByLabel = dict;
+    }
+
+    private void selectActivity(Activity activity)
+    {
+        ActivitiesMap[Project] = new ActivityModel(Project, activity.Duration, activity.Description)
+        {
+            ActivityId = activity.Id,
+            Label = activity.Label
+        };
+        notifyParent();
+    }
 }

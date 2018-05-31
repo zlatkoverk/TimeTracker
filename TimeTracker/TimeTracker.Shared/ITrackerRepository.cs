@@ -18,5 +18,6 @@ namespace TimeTracker.Shared
         void ModifyProject(Project project);
         void AddActivity(Guid projectId, Activity activity);
         IList<Activity> GetActivities(Guid projectId);
+        void UpdateActivity(Activity activity);
     }
 }

@@ -8,16 +8,20 @@ namespace TimeTracker.Shared
     {
         public Guid Id { get; set; }
         public string Description { get; set; }
-        public DateTime StartTime { get; set; }
-        public DateTime? EndTime { get; set; }
+        public TimeSpan Duration { get; set; }
+        public string Label { get; set; }
 
         public Activity() { }
-        public Activity(string description, DateTime startTime, DateTime endTime)
+        public Activity(string description, TimeSpan duration, string label)
         {
+            if(label==null)
+            {
+                label = "witoutLabel";
+            }
             Id = Guid.NewGuid();
             Description = description;
-            StartTime = startTime;
-            EndTime = endTime;
+            Duration = duration;
+            Label = label;
         }
     }
 }

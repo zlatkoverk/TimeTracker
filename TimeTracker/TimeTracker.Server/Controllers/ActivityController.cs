@@ -19,9 +19,19 @@ namespace TimeTracker.Server.Controllers
         }
 
         [HttpPost("[action]")]
-        public void Add([FromBody] CreateActivityModel model)
+        public void Add([FromBody] ActivityModel model)
         {
-            _repository.AddActivity(model.ProjectId, new Activity(model.Description, model.StartTime, model.EndTime.Value));
+            if (model.ActivityId == null)
+            {
+                _repository.AddActivity(model.ProjectId, new Activity(model.Description, model.Duration, model.Label));
+            }
+            else
+            {
+                _repository.UpdateActivity(new Activity(model.Description, model.Duration, model.Label)
+                {
+                    Id = model.ActivityId.Value
+                });
+            }
         }
 
         [HttpGet("[action]/{project}")]

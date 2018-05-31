@@ -78,7 +78,16 @@ namespace TimeTracker.Shared
         public IList<Activity> GetActivities(Guid projectId)
         {
             var p = _context.Projects.Include(project => project.Activities).FirstOrDefault(project => project.Id == projectId);
-            return p.Activities.OrderByDescending(a=>a.StartTime).ToList();
+            return p.Activities.ToList();
+        }
+
+        public void UpdateActivity(Activity activity)
+        {
+            var a = _context.Activities.SingleOrDefault(ac => ac.Id == activity.Id);
+            a.Label = activity.Label;
+            a.Description = activity.Description;
+            a.Duration = activity.Duration;
+            _context.SaveChanges();
         }
     }
 }

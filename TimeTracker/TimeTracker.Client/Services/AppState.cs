@@ -72,7 +72,7 @@ namespace TimeTracker.Client.Services
             NotifyStateChanged();
         }
 
-        public async Task SaveActivity(CreateActivityModel activity)
+        public async Task SaveActivity(ActivityModel activity)
         {
             await http.PostJsonAsync("api/activity/add", activity);
             ActiveProject.Activities = await http.GetJsonAsync<IList<Activity>>("api/activity/getall/" + ActiveProject.Id);

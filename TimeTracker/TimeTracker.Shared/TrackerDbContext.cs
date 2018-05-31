@@ -34,8 +34,8 @@ namespace TimeTracker.Shared
 
             modelBuilder.Entity<Activity>().HasKey(activity => activity.Id);
             modelBuilder.Entity<Activity>().Property(activity => activity.Description).IsRequired(false);
-            modelBuilder.Entity<Activity>().Property(activity => activity.StartTime).IsRequired();
-            modelBuilder.Entity<Activity>().Property(activity => activity.EndTime).IsRequired();
+            modelBuilder.Entity<Activity>().Property(activity => activity.Duration).IsRequired(true);
+            modelBuilder.Entity<Activity>().Property(activity => activity.Label).IsRequired(false);
         }
     }
 }

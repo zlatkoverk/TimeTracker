@@ -1,70 +1,102 @@
 ﻿@using TimeTracker.Shared.Model
 @using System.Timers
 
+<div>You have @runningActivities Activities running.</div>
 @if (!Activities.ContainsKey(Project))
 {
     <button class="btn btn-success" onclick="@StartActivity">Start Activity</button>
 }
 else
 {
-    <div>Start time: @Activities[Project].StartTime</div>
-    @if (Activities[Project].EndTime == null)
+
+    <h4>Time elapsed: <span class="badge badge-secondary">@Activities[Project].Duration.Minutes.ToString("D2"):@((Activities[Project].Duration.Seconds % 60).ToString("D2"))</span></h4>
+    <input class="form-control" placeholder="Description" type="text" bind="@Activities[Project].Description" />
+    <input class="form-control" placeholder="Label" type="text" bind="@Activities[Project].Label" />
+    @if (Activities[Project].Running)
     {
-        <h4>Time elapsed: <span class="badge badge-secondary">@timeElapsed.Minutes.ToString("D2"):@((timeElapsed.Seconds % 60).ToString("D2"))</span></h4>
-        <input class="form-control" placeholder="Description" type="text" bind="@Activities[Project].Description" />
-        <button class="btn btn-danger" onclick="@StopActivity">Stop Activity</button>
+        <button class="btn btn-info" onclick="@pauseActivity">Pause Activity</button>
     }
     else
     {
-        <div>End time: @Activities[Project].EndTime</div>
+        <button class="btn btn-info" onclick="@resumeActivity">Resume Activity</button>
     }
+    <button class="btn btn-danger" onclick="@StopActivity">Stop/Save Activity</button>
+
 }
 
 @functions
 {
-    private Dictionary<Guid, CreateActivityModel> Activities = new Dictionary<Guid, CreateActivityModel>();
-    [Parameter]
-    private Func<CreateActivityModel, Task> SaveActivity { get; set; }
-    [Parameter]
-    private Guid Project { get; set; }
-    private string Description;
-    private Timer timer;
-    private int runningActivities = 0;
-    private TimeSpan timeElapsed;
+[Parameter]
+private Dictionary<Guid, ActivityModel> Activities { get; set; }
+[Parameter]
+private Func<ActivityModel, Task> SaveActivity { get; set; }
+[Parameter]
+private Guid Project { get; set; }
+private string Description;
+private Timer timer;
+private int runningActivities = 0;
 
-    private void StartActivity()
+private void StartActivity()
+{
+    Activities[Project] = new ActivityModel(Guid.Parse(Project.ToString()));
+    Activities[Project].Running = true;
+    if (runningActivities == 0)
     {
-        Activities[Project] = new CreateActivityModel(Guid.Parse(Project.ToString()), DateTime.Now);
-        if (runningActivities == 0)
-        {
-            timer.Start();
-        }
-        ++runningActivities;
-        timeElapsed = new TimeSpan(0);
+        timer.Start();
     }
+    ++runningActivities;
+}
 
-    private void ChangeTime(Object o, ElapsedEventArgs e)
+private void ChangeTime(Object o, ElapsedEventArgs e)
+{
+    if (Activities[Project].Running)
     {
-        timeElapsed = DateTime.Now.Subtract(Activities[Project].StartTime);
-        StateHasChanged();
+        Activities[Project].AddSecond();
     }
+    StateHasChanged();
+}
 
-    private void StopActivity()
+private void pauseActivity()
+{
+    if (--runningActivities == 0)
     {
-        Activities[Project].EndTime = DateTime.Now;
+        timer.Stop();
+    }
+    Activities[Project].Running = false;
+}
+
+private void resumeActivity()
+{
+    if (runningActivities == 0)
+    {
+        timer.Start();
+    }
+    ++runningActivities;
+    Activities[Project].Running = true;
+}
+
+private void StopActivity()
+{
+    if (!Activities[Project].Running)
+    {
         SaveActivity(Activities[Project]);
         Activities.Remove(Project);
-        if (--runningActivities == 0)
-        {
-            timer.Stop();
-        }
+        return;
     }
-
-    protected override void OnInit()
+    Activities[Project].Running = false;
+    SaveActivity(Activities[Project]);
+    Activities.Remove(Project);
+    if (--runningActivities == 0)
     {
-        base.OnInit();
-        timer = new Timer();
-        timer.Elapsed += ChangeTime;
-        timer.Interval = 1000;
+        timer.Stop();
     }
+}
+
+protected override void OnInit()
+{
+    base.OnInit();
+    timer = new Timer();
+    timer.Elapsed += ChangeTime;
+    timer.Interval = 1000;
+}
 }

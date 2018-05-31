@@ -59,7 +59,7 @@ namespace TimeTracker.Server.Controllers
 
             foreach (var activity in project.Activities)
             {
-                var duration = (int)activity.EndTime.Value.Subtract(activity.StartTime).TotalMinutes;
+                var duration = (int)activity.Duration.TotalMinutes;
                 if (!durations.ContainsKey(duration))
                 {
                     durations[duration] = 1;
