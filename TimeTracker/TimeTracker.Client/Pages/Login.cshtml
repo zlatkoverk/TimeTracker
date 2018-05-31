@@ -67,7 +67,8 @@
             </div>
 
 @functions {
-    public AppState appState { get; set; }
+    [Parameter]
+    private AppState appState { get; set; }
     private string Username;
     private string Password;
     private string Message;

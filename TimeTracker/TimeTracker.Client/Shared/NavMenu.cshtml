@@ -42,7 +42,8 @@
     </nav>
 
 @functions {
-    public AppState state { get; set; }
+    [Parameter]
+    private AppState state { get; set; }
     private void Logout()
     {
         state.Logout();

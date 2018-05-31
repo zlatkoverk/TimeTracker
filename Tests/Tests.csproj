@@ -60,6 +60,10 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\TimeTracker\TimeTracker.Client\TimeTracker.Client.csproj">
+      <Project>{ef8046c3-e1cf-4833-ae81-cf911a1f177f}</Project>
+      <Name>TimeTracker.Client</Name>
+    </ProjectReference>
     <ProjectReference Include="..\TimeTracker\TimeTracker.Shared\TimeTracker.Shared.csproj">
       <Project>{975da06d-1483-4e93-b09b-cbe08eb21b3f}</Project>
       <Name>TimeTracker.Shared</Name>

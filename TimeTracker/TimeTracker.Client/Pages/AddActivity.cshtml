@@ -22,47 +22,49 @@ else
 
 @functions
 {
-private Dictionary<Guid, CreateActivityModel> Activities = new Dictionary<Guid, CreateActivityModel>();
-public Func<CreateActivityModel, Task> SaveActivity { get; set; }
-public Guid Project { get; set; }
-private string Description;
-private Timer timer;
-private int runningActivities = 0;
-private TimeSpan timeElapsed;
+    private Dictionary<Guid, CreateActivityModel> Activities = new Dictionary<Guid, CreateActivityModel>();
+    [Parameter]
+    private Func<CreateActivityModel, Task> SaveActivity { get; set; }
+    [Parameter]
+    private Guid Project { get; set; }
+    private string Description;
+    private Timer timer;
+    private int runningActivities = 0;
+    private TimeSpan timeElapsed;
 
-private void StartActivity()
-{
-    Activities[Project] = new CreateActivityModel(Guid.Parse(Project.ToString()), DateTime.Now);
-    if (runningActivities == 0)
+    private void StartActivity()
     {
-        timer.Start();
+        Activities[Project] = new CreateActivityModel(Guid.Parse(Project.ToString()), DateTime.Now);
+        if (runningActivities == 0)
+        {
+            timer.Start();
+        }
+        ++runningActivities;
+        timeElapsed = new TimeSpan(0);
     }
-    ++runningActivities;
-    timeElapsed = new TimeSpan(0);
-}
 
-private void ChangeTime(Object o, ElapsedEventArgs e)
-{
-    timeElapsed = DateTime.Now.Subtract(Activities[Project].StartTime);
-    StateHasChanged();
-}
-
-private void StopActivity()
-{
-    Activities[Project].EndTime = DateTime.Now;
-    SaveActivity(Activities[Project]);
-    Activities.Remove(Project);
-    if (--runningActivities == 0)
+    private void ChangeTime(Object o, ElapsedEventArgs e)
     {
-        timer.Stop();
+        timeElapsed = DateTime.Now.Subtract(Activities[Project].StartTime);
+        StateHasChanged();
     }
-}
 
-protected override void OnInit()
-{
-    base.OnInit();
-    timer = new Timer();
-    timer.Elapsed += ChangeTime;
-    timer.Interval = 1000;
-}
+    private void StopActivity()
+    {
+        Activities[Project].EndTime = DateTime.Now;
+        SaveActivity(Activities[Project]);
+        Activities.Remove(Project);
+        if (--runningActivities == 0)
+        {
+            timer.Stop();
+        }
+    }
+
+    protected override void OnInit()
+    {
+        base.OnInit();
+        timer = new Timer();
+        timer.Elapsed += ChangeTime;
+        timer.Interval = 1000;
+    }
 }

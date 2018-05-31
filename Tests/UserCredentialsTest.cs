@@ -1,5 +1,5 @@
-﻿using TimeTracker.Shared;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TimeTracker.Shared.Model;
 
 namespace Tests
 {
@@ -14,11 +14,11 @@ namespace Tests
             var password = "pass123";
             var anotherPassword = password + "l";
 
-            var cred = new UserCredentials(username, password);
+            var cred = new LoginModel(username, password);
 
-            Assert.IsTrue(cred.Equals(new UserCredentials(username, password)));
-            Assert.IsFalse(cred.Equals(new UserCredentials(anotherUsername, password)));
-            Assert.IsFalse(cred.Equals(new UserCredentials(username, anotherPassword)));
+            Assert.IsTrue(cred.Equals(new LoginModel(username, password)));
+            Assert.IsFalse(cred.Equals(new LoginModel(anotherUsername, password)));
+            Assert.IsFalse(cred.Equals(new LoginModel(username, anotherPassword)));
         }
 
         [TestMethod]
@@ -29,11 +29,11 @@ namespace Tests
             var password = "afij94sf1sf";
             var anotherPassword = password + "l";
 
-            var cred = new UserCredentials(username, password);
+            var cred = new LoginModel(username, password);
 
-            Assert.IsTrue(cred == new UserCredentials(username, password));
-            Assert.IsFalse(cred == new UserCredentials(anotherUsername, password));
-            Assert.IsFalse(cred == new UserCredentials(username, anotherPassword));
+            Assert.IsTrue(cred == new LoginModel(username, password));
+            Assert.IsFalse(cred == new LoginModel(anotherUsername, password));
+            Assert.IsFalse(cred == new LoginModel(username, anotherPassword));
         }
     }
 }

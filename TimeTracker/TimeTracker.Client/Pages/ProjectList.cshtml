@@ -40,16 +40,23 @@
 
 @functions
 {
-    public IList<Project> Projects { get; set; }
-    public string Name { get; set; }
-    public string Description { get; set; }
-    public bool ShowActive { get; set; }
+    [Parameter]
+    private IList<Project> Projects { get; set; }
+    private string Name { get; set; }
+    private string Description { get; set; }
+    [Parameter]
+    private bool ShowActive { get; set; }
 
-    public Func<CreateProjectModel, Task> OnCreate { get; set; }
-    public Func<Project, Task> OnArchiveProject { get; set; }
-    public Guid UserId { get; set; }
-    public Func<Task> ChangeListState { get; set; }
-    public Func<Project, Task> SetActiveProject { get; set; }
+    [Parameter]
+    private Func<CreateProjectModel, Task> OnCreate { get; set; }
+    [Parameter]
+    private Func<Project, Task> OnArchiveProject { get; set; }
+    [Parameter]
+    private Guid UserId { get; set; }
+    [Parameter]
+    private Func<Task> ChangeListState { get; set; }
+    [Parameter]
+    private Func<Project, Task> SetActiveProject { get; set; }
 
     private void ChangeState(Project project)
     {

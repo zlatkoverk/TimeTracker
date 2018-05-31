@@ -22,6 +22,8 @@ else
 
 @functions
 {
-    public Project Project { get; set; }
-    public Func<CreateActivityModel, Task> SaveActivity { get; set; }
+    [Parameter]
+    private Project Project { get; set; }
+    [Parameter]
+    private Func<CreateActivityModel, Task> SaveActivity { get; set; }
 }

@@ -15,10 +15,11 @@ else
 
 
 @functions{
-    public Project Project { get; set; }
-    
+    [Parameter]
+    private Project Project { get; set; }
+
     public async Task load()
-    {   
+    {
         RegisteredFunction.Invoke<bool>("drawChart", await http.GetStringAsync("api/project/chartData/"+Project.Id), "Chart: " + Project.Name);
     }
 }
