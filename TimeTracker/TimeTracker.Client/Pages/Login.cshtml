@@ -74,7 +74,7 @@
     private string Message;
     private Func<LoginModel, Task> LoginFunc;
 
-    public void CheckLogin()
+    public async void CheckLogin()
     {
         if(string.IsNullOrWhiteSpace(Username))
         {
@@ -88,7 +88,7 @@
         }
         if (!appState.LoggedIn)
         {
-            LoginFunc(new LoginModel(Username, Password)).RunSynchronously();
+            await LoginFunc(new LoginModel(Username, Password));
         }
         if(appState.LoggedIn)
         {

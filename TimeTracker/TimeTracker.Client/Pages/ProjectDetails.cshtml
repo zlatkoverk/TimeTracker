@@ -13,20 +13,24 @@ else
             <h1 class="display-4">@Project.Name</h1>
             <p class="lead">@Project.Description</p>
             <hr class="my-4" />
-            @if (ShowManualAddition)
-            {
-                <button class="btn btn-info" onclick=@(()=>ShowManualAddition=!ShowManualAddition)>Hide</button>
-                <AddActivityManual SaveActivity=SaveActivity Project=Project.Id />
-                <hr class="my-4" />
-            }
-            @if (!ShowManualAddition)
-            {
-                <button class="btn btn-info" onclick=@(() => ShowManualAddition = !ShowManualAddition)>Add Activity Manually</button>
-                <hr class="my-4"/>
-            }
-            <AddActivity Project=Project.Id SaveActivity=SaveActivity Activities=ActivitiesMap />
+            <div class="row">
+                <div class="col-md-6">
+                    @if (ShowManualAddition)
+                    {
+                        <button class="btn btn-info" onclick=@(()=>ShowManualAddition=!ShowManualAddition)>Hide</button>
+                        <AddActivityManual SaveActivity=SaveActivity Project=Project.Id />
+                    }
+                    @if (!ShowManualAddition)
+                    {
+                        <button class="btn btn-info" onclick=@(() => ShowManualAddition = !ShowManualAddition)>Add Activity Manually</button>
+                    }
+                </div>
+                <div class="col-md-6">
+                    <AddActivity Project=Project.Id SaveActivity=SaveActivity />
+                </div>
+            </div>
             <hr class="my-4" />
-            <ActivityList Activities=Project.Activities ActivitiesMap=ActivitiesMap Project=Project.Id notifyParent=StateHasChanged />
+            <ActivityList Activities=Project.Activities Project=Project.Id notifyParent=StateHasChanged SaveActivity=SaveActivity />
         </div>
     </div>
 }

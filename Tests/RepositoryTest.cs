@@ -29,13 +29,10 @@ namespace Tests
 
                 /*Check if only one user is stored in database.*/
                 Assert.AreEqual(1, context.Users.Count());
-                Assert.AreEqual(1, context.Credentials.Count());
 
                 /*Check if stored user has same data as original.*/
                 Assert.AreEqual(name, context.Users.Single().Name);
                 Assert.AreEqual(surname, context.Users.Single().Surname);
-                Assert.AreEqual(username, context.Users.Include(u => u.Credentials).Single().Credentials.Username);
-                Assert.AreEqual(password.GetHashCode(), context.Users.Include(u => u.Credentials).Single().Credentials.PasswordHash);
             }
         }
 
@@ -87,15 +84,15 @@ namespace Tests
                 var repository = new TrackerSqlRepository(context);
 
                 /*Check if method returns stored user when provided right credentials and null when provided wrong credentials.*/
-                var user = repository.GetUser(new UserCredentials(takenUsername, password));
+                var user = repository.GetUser(new TimeTracker.Shared.Model.LoginModel(takenUsername, password));
                 Assert.IsNotNull(user);
                 Assert.AreEqual(name, user.Name);
                 Assert.AreEqual(surname, user.Surname);
-                Assert.AreEqual(takenUsername, user.Credentials.Username);
-                Assert.AreEqual(password.GetHashCode(), user.Credentials.PasswordHash);
+                Assert.AreEqual(takenUsername, user.Username);
+                Assert.AreEqual(password.GetHashCode(), user.PasswordHash);
 
-                Assert.IsNull(repository.GetUser(new UserCredentials(takenUsername, wrongPassword)));
-                Assert.IsNull(repository.GetUser(new UserCredentials(freeUsername, password)));
+                Assert.IsNull(repository.GetUser(new TimeTracker.Shared.Model.LoginModel(takenUsername, wrongPassword)));
+                Assert.IsNull(repository.GetUser(new TimeTracker.Shared.Model.LoginModel(freeUsername, password)));
             }
         }
     }

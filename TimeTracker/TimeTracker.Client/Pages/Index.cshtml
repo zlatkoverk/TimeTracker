@@ -11,22 +11,23 @@ else
 {
     <div class="container">
         <div class="row">
-            <div class="col">
-                <ProjectDetails Project=appState.ActiveProject SaveActivity=appState.SaveActivity/>
-            </div>
-            <div class="col">
+            <div class="col-md-4">
                 <ProjectList Projects=appState.Projects OnCreate=appState.CreateProject UserId=appState.User.Id SetActiveProject=appState.SetActiveProject
                              OnArchiveProject=appState.ChangeProjectState ShowActive=appState.ActiveProjectsShown ChangeListState=appState.ShowOtherProjects />
                 <hr />
-                <ChartComponent Project="appState.ActiveProject"/>
+                <ChartComponent Project="appState.ActiveProject" />
+            </div>
+            <div class="col-md-8">
+                <ProjectDetails Project=appState.ActiveProject SaveActivity=appState.SaveActivity />
             </div>
         </div>
     </div>
 }
 
 @functions 
-{      
-    protected override async Task OnInitAsync()
+{
+
+    protected override void OnInit()
     {
         appState.OnChange += StateHasChanged;
     }

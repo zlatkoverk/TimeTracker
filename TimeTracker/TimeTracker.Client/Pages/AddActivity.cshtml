@@ -1,33 +1,62 @@
 ﻿@using TimeTracker.Shared.Model
 @using System.Timers
 
-<div>You have @runningActivities Activities running.</div>
-@if (!Activities.ContainsKey(Project))
+@if (!InLine)
 {
-    <button class="btn btn-success" onclick="@StartActivity">Start Activity</button>
-}
-else
-{
-
-    <h4>Time elapsed: <span class="badge badge-secondary">@Activities[Project].Duration.Hours.ToString("D2"):@Activities[Project].Duration.Minutes.ToString("D2"):@((Activities[Project].Duration.Seconds % 60).ToString("D2"))</span></h4>
-    <input class="form-control" placeholder="Description" type="text" bind="@Activities[Project].Description" />
-    <input class="form-control" placeholder="Label" type="text" bind="@Activities[Project].Label" />
-    @if (Activities[Project].Running)
+    @if (!Show)
     {
-        <button class="btn btn-info" onclick="@pauseActivity">Pause Activity</button>
+        <button class="btn btn-success" onclick="@StartActivity">Start Activity</button>
     }
     else
     {
-        <button class="btn btn-info" onclick="@resumeActivity">Resume Activity</button>
+        <h4>Time elapsed: <span class="badge badge-secondary">@Activity.Duration.Hours.ToString("D2"):@Activity.Duration.Minutes.ToString("D2"):@((Activity.Duration.Seconds % 60).ToString("D2"))</span></h4>
+        <input class="form-control" placeholder="Description" type="text" bind="@Activity.Description" />
+        <input class="form-control" placeholder="Label" type="text" bind="@Activity.Label" />
+        @if (Activity.Running)
+        {
+            <button class="btn btn-info" onclick="@pauseActivity">Pause Activity</button>
+        }
+        else
+        {
+            <button class="btn btn-info" onclick="@resumeActivity">Resume Activity</button>
+        }
+        <button class="btn btn-danger" onclick="@StopActivity">Stop/Save Activity</button>
+        <button class="btn btn-danger" onclick="@dismissActivity">Dismiss</button>
     }
-    <button class="btn btn-danger" onclick="@StopActivity">Stop/Save Activity</button>
+}
+else
+{
+    @if (!Show)
+    {
+        <button class="btn btn-default" onclick="@StartActivity">Continue</button>
+    }
+    else
+    {
+        <span class="badge badge-secondary">@Activity.Duration.Hours.ToString("D2"):@Activity.Duration.Minutes.ToString("D2"):@((Activity.Duration.Seconds % 60).ToString("D2"))</span>
+        @if (Activity.Running)
+        {
+            <button class="btn btn-info" onclick="@pauseActivity">Pause</button>
+        }
+        else
+        {
+            <button class="btn btn-info" onclick="@resumeActivity">Resume</button>
+        }
+        <button class="btn btn-primary" onclick="@StopActivity">Stop And Save</button>
+        <button class="btn btn-danger" onclick="@dismissActivity">Dismiss</button>
+    }
 
 }
 
 @functions
 {
 [Parameter]
-private Dictionary<Guid, ActivityModel> Activities { get; set; }
+private bool InLine { get; set; }
+[Parameter]
+private bool Show { get; set; }
+[Parameter]
+private TimeSpan? OldDuration { get; set; }
+[Parameter]
+private ActivityModel Activity { get; set; }
 [Parameter]
 private Func<ActivityModel, Task> SaveActivity { get; set; }
 [Parameter]
@@ -38,8 +67,8 @@ private int runningActivities = 0;
 
 private void StartActivity()
 {
-    Activities[Project] = new ActivityModel(Guid.Parse(Project.ToString()));
-    Activities[Project].Running = true;
+    Show = true;
+    Activity.Running = true;
     if (runningActivities == 0)
     {
         timer.Start();
@@ -49,9 +78,9 @@ private void StartActivity()
 
 private void ChangeTime(Object o, ElapsedEventArgs e)
 {
-    if (Activities[Project].Running)
+    if (Activity.Running)
     {
-        Activities[Project].AddSecond();
+        Activity.AddSecond();
     }
     StateHasChanged();
 }
@@ -62,7 +91,7 @@ private void pauseActivity()
     {
         timer.Stop();
     }
-    Activities[Project].Running = false;
+    Activity.Running = false;
 }
 
 private void resumeActivity()
@@ -72,24 +101,42 @@ private void resumeActivity()
         timer.Start();
     }
     ++runningActivities;
-    Activities[Project].Running = true;
+    Activity.Running = true;
 }
 
 private void StopActivity()
 {
-    if (!Activities[Project].Running)
+    if (OldDuration.HasValue)
     {
-        SaveActivity(Activities[Project]);
-        Activities.Remove(Project);
-        return;
+        Activity.Duration = Activity.Duration.Add(OldDuration.Value);
     }
-    Activities[Project].Running = false;
-    SaveActivity(Activities[Project]);
-    Activities.Remove(Project);
-    if (--runningActivities == 0)
+    if (Activity.Running && --runningActivities == 0)
     {
         timer.Stop();
     }
+
+    SaveActivity(Activity);
+    Show = false;
+    if (Activity.ActivityId == null)
+    {
+        Activity = new ActivityModel(Project);
+    }
+    else
+    {
+        Activity.Running = false;
+        Activity.Duration = new TimeSpan();
+    }
+}
+
+private void dismissActivity()
+{
+    if (Activity.Running && --runningActivities == 0)
+    {
+        timer.Stop();
+    }
+    Activity.Duration = new TimeSpan();
+    Activity.Running = false;
+    Show = false;
 }
 
 protected override void OnInit()
@@ -98,5 +145,13 @@ protected override void OnInit()
     timer = new Timer();
     timer.Elapsed += ChangeTime;
     timer.Interval = 1000;
+}
+
+protected override void OnParametersSet()
+{
+    if (Activity == null)
+    {
+        Activity = new ActivityModel(Project);
+    }
 }
 }
