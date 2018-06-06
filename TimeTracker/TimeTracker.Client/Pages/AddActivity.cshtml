@@ -9,7 +9,7 @@
 else
 {
 
-    <h4>Time elapsed: <span class="badge badge-secondary">@Activities[Project].Duration.Minutes.ToString("D2"):@((Activities[Project].Duration.Seconds % 60).ToString("D2"))</span></h4>
+    <h4>Time elapsed: <span class="badge badge-secondary">@Activities[Project].Duration.Hours.ToString("D2"):@Activities[Project].Duration.Minutes.ToString("D2"):@((Activities[Project].Duration.Seconds % 60).ToString("D2"))</span></h4>
     <input class="form-control" placeholder="Description" type="text" bind="@Activities[Project].Description" />
     <input class="form-control" placeholder="Label" type="text" bind="@Activities[Project].Label" />
     @if (Activities[Project].Running)

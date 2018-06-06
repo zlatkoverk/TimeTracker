@@ -1,5 +1,6 @@
 ﻿@using TimeTracker.Shared
 @using TimeTracker.Shared.Model
+@inject HttpClient http
 
 @if (Activities != null)
 {@foreach (var label in ActivitiesByLabel.Keys)
@@ -15,9 +16,10 @@
             <tbody>
                 @foreach (var activity in ActivitiesByLabel[label])
                 {
-                    <tr onclick="@(() => selectActivity(activity))">
-                        <td>@activity.Description</td>
+                    <tr>
+                        <td onclick="@(() => selectActivity(activity))">@activity.Description</td>
                         <td>@activity.Duration.Hours.ToString("D2"):@activity.Duration.Minutes.ToString("D2"):@((activity.Duration.Seconds % 60).ToString("D2"))</td>
+                        <td onclick="@(()=>remove(activity))"><span>Delete</span></td>
                     </tr>
                 }
             </tbody>
@@ -27,38 +29,47 @@
 
 @functions
 {
-[Parameter]
-private Dictionary<Guid, ActivityModel> ActivitiesMap { get; set; }
-[Parameter]
-private Guid Project { get; set; }
-[Parameter]
-private IList<Activity> Activities { get; set; }
-[Parameter]
-private Action notifyParent { get; set; }
-private IDictionary<string, IList<Activity>> ActivitiesByLabel { get; set; }
+    [Parameter]
+    private Dictionary<Guid, ActivityModel> ActivitiesMap { get; set; }
+    [Parameter]
+    private Guid Project { get; set; }
+    [Parameter]
+    private IList<Activity> Activities { get; set; }
+    [Parameter]
+    private Action notifyParent { get; set; }
+    private IDictionary<string, IList<Activity>> ActivitiesByLabel { get; set; }
 
-protected override void OnParametersSet()
-{
-    IDictionary<string, IList<Activity>> dict = new Dictionary<string, IList<Activity>>();
-    foreach (var a in Activities)
+    protected override void OnParametersSet()
     {
-        if (!dict.ContainsKey(a.Label))
+        IDictionary<string, IList<Activity>> dict = new Dictionary<string, IList<Activity>>();
+        foreach (var a in Activities)
         {
-            dict[a.Label] = new List<Activity>();
+            if (!dict.ContainsKey(a.Label))
+            {
+                dict[a.Label] = new List<Activity>();
+            }
+            dict[a.Label].Add(a);
         }
-        dict[a.Label].Add(a);
+
+        ActivitiesByLabel = dict;
     }
 
-    ActivitiesByLabel = dict;
-}
-
-private void selectActivity(Activity activity)
-{
-    ActivitiesMap[Project] = new ActivityModel(Project, activity.Duration, activity.Description)
+    private async Task remove(Activity activity)
     {
-        ActivityId = activity.Id,
-        Label = activity.Label
-    };
-    notifyParent();
-}
+        await http.PostJsonAsync("api/activity/remove", activity.Id);
+        Activities.Remove(activity);
+        ActivitiesMap.Remove(activity.Id);
+        ActivitiesByLabel[activity.Label].Remove(activity);
+        notifyParent();
+    }
+
+    private void selectActivity(Activity activity)
+    {
+        ActivitiesMap[Project] = new ActivityModel(Project, activity.Duration, activity.Description)
+        {
+            ActivityId = activity.Id,
+            Label = activity.Label
+        };
+        notifyParent();
+    }
 }

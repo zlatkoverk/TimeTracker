@@ -89,5 +89,12 @@ namespace TimeTracker.Shared
             a.Duration = activity.Duration;
             _context.SaveChanges();
         }
+
+        public void RemoveActivity(Guid activity)
+        {
+            var a = _context.Activities.SingleOrDefault(ac => ac.Id == activity);
+            _context.Activities.Remove(a);
+            _context.SaveChanges();
+        }
     }
 }

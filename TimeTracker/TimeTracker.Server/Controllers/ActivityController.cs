@@ -49,5 +49,11 @@ namespace TimeTracker.Server.Controllers
             project.Active = model.Active;
             _repository.ModifyProject(project);
         }
+
+        [HttpPost("[action]")]
+        public void Remove([FromBody]Guid activity)
+        {
+            _repository.RemoveActivity(activity);
+        }
     }
 }
